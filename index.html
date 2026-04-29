@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0"/>
+  <title>GameReward Hub – Watch & Earn</title>
+  <meta name="monetag" content="5fc8e541f4bcdad9658de209d8404d0d"/>
+
+  <!--
+    ✅ USER-FRIENDLY ADS ONLY:
+      • Adsterra Banner Top    — static iframe, never interrupts
+      • Adsterra Box Mid-page  — static iframe in its own labelled zone
+      • Adsterra Sticky Footer — closeable, never blocks content
+    ❌ REMOVED (were causing annoying behaviour):
+      • Monetag In-Page Push   — was triggering popups/overlays
+      • Monetag Vignette       — was opening overlay on interaction
+      • Native Banner (interventioncopiedloitering.com) — onclick redirects
+      • All onclick / popunder scripts
+      • Push-notification permission requests
+  -->
+
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    html,body{
+      overflow-x:hidden;overflow-y:auto!important;
+      height:auto!important;-webkit-overflow-scrolling:touch;
+    }
+
+    :root{
+      --bg:#0d0f1a;
+      --surface:#161928;
+      --surface2:#1e2235;
+      --border:#2a2e45;
+      --blue:#3b82f6;
+      --cyan:#06b6d4;
+      --violet:#8b5cf6;
+      --green:#22c55e;
+      --yellow:#f59e0b;
+      --text:#e8eaf6;
+      --muted:#8892b0;
+      --accent-g:linear-gradient(135deg,#3b82f6,#8b5cf6);
+      --green-g:linear-gradient(135deg,#22c55e,#16a34a);
+      --radius:18px;
+      --shadow:0 4px 30px rgba(59,130,246,.12);
+      --shadow-lg:0 8px 40px rgba(59,130,246,.2);
+    }
+
+    body{
+      font-family:'Plus Jakarta Sans',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      padding-bottom:80px;
+    }
+
+    /* ── BACKGROUND GLOW ── */
+    body::before{
+      content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 10%, rgba(59,130,246,.07) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 90%, rgba(139,92,246,.07) 0%, transparent 70%);
+    }
+
+    /* ── NAV ── */
+    nav{
+      background:rgba(22,25,40,.92);
+      backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+      border-bottom:1px solid var(--border);
+      padding:0 20px;height:60px;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;z-index:200;
+    }
+    .logo{
+      font-family:'Syne',sans-serif;font-weight:800;font-size:1.2rem;
+      display:flex;align-items:center;gap:10px;
+      background:var(--accent-g);-webkit-background-clip:text;
+      -webkit-text-fill-color:transparent;background-clip:text;
+    }
+    .logo-icon{
+      width:34px;height:34px;flex-shrink:0;
+      background:var(--accent-g);border-radius:10px;
+      display:grid;place-items:center;
+    }
+    .logo-icon svg{width:18px;height:18px;fill:#fff;}
+    .nav-right{
+      display:flex;align-items:center;gap:6px;
+      font-size:.7rem;font-weight:600;color:var(--muted);
+    }
+    .nav-right svg{width:13px;height:13px;fill:#22c55e;}
+
+    /* ── TOP AD BAR ── */
+    .top-ad{
+      background:rgba(22,25,40,.6);
+      border-bottom:1px solid var(--border);
+      display:flex;flex-direction:column;align-items:center;
+      padding:8px 12px 6px;gap:3px;
+      position:relative;z-index:1;
+    }
+    .ad-label{
+      font-size:.52rem;letter-spacing:1.2px;text-transform:uppercase;
+      color:#3a3f58;font-weight:600;
+    }
+    .d-only{display:flex;justify-content:center;}
+    .m-only{display:none;justify-content:center;}
+    @media(max-width:740px){.d-only{display:none;}.m-only{display:flex;}}
+
+    /* ── PAGE WRAP ── */
+    .wrap{
+      max-width:520px;margin:0 auto;
+      padding:22px 16px 28px;
+      display:flex;flex-direction:column;
+      align-items:center;gap:18px;
+      position:relative;z-index:1;
+    }
+
+    /* ── TAB WARNING ── */
+    #tab-warn{
+      display:none;position:fixed;top:60px;left:0;right:0;z-index:400;
+      background:#2d1f00;border-bottom:2px solid var(--yellow);
+      padding:10px 18px;text-align:center;
+      font-size:.8rem;font-weight:600;color:#fbbf24;
+    }
+
+    /* ── REWARD SUCCESS CARD ── */
+    #reward-status{
+      display:none;width:100%;
+      background:linear-gradient(135deg,rgba(34,197,94,.15),rgba(22,163,74,.1));
+      border:1.5px solid rgba(34,197,94,.4);
+      border-radius:var(--radius);
+      padding:28px 22px;text-align:center;
+      box-shadow:0 4px 30px rgba(34,197,94,.15);
+      animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn{0%{transform:scale(.9);opacity:0;}100%{transform:scale(1);opacity:1;}}
+    #reward-status .rs-icon{font-size:2.8rem;margin-bottom:10px;}
+    #reward-status h2{
+      font-family:'Syne',sans-serif;font-size:1.7rem;font-weight:800;
+      color:#4ade80;margin:0 0 8px;
+    }
+    #reward-status p{font-size:.85rem;color:#86efac;line-height:1.6;margin:0;}
+    .token-box{
+      background:rgba(0,0,0,.3);border:1px solid rgba(34,197,94,.3);
+      border-radius:10px;padding:10px 14px;margin-top:14px;
+      font-size:.7rem;font-weight:700;color:#4ade80;
+      letter-spacing:.6px;word-break:break-all;
+    }
+
+    /* ── MAIN CARD ── */
+    .card{
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow-lg);
+      padding:28px 22px 26px;width:100%;
+      display:flex;flex-direction:column;
+      align-items:center;gap:20px;text-align:center;
+    }
+
+    /* chip */
+    .chip{
+      display:inline-flex;align-items:center;gap:7px;
+      background:rgba(59,130,246,.12);
+      border:1px solid rgba(59,130,246,.25);
+      border-radius:30px;padding:6px 16px;
+      font-size:.67rem;font-weight:700;
+      color:#93c5fd;letter-spacing:.5px;text-transform:uppercase;
+    }
+    .chip-dot{
+      width:7px;height:7px;border-radius:50%;
+      background:var(--blue);flex-shrink:0;
+      animation:pulse 1.4s infinite;
+    }
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.6);}}
+
+    h1{
+      font-family:'Syne',sans-serif;
+      font-size:clamp(1.5rem,5vw,2rem);
+      font-weight:800;line-height:1.2;color:var(--text);
+      margin:0;
+    }
+    h1 em{
+      font-style:normal;
+      background:var(--accent-g);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+    }
+    .sub{color:var(--muted);font-size:.85rem;line-height:1.65;margin:0;}
+
+    /* reward info pill */
+    #rinfo{
+      display:none;width:100%;
+      background:rgba(6,182,212,.08);
+      border:1px solid rgba(6,182,212,.25);
+      border-radius:12px;padding:14px 16px;
+      align-items:center;gap:12px;text-align:left;
+    }
+    #rinfo .ri{font-size:1.6rem;flex-shrink:0;}
+    #rinfo strong{display:block;font-size:.9rem;color:#67e8f9;margin-bottom:2px;}
+    #rinfo span{font-size:.76rem;color:#a5f3fc;}
+
+    /* progress bar */
+    .prog-track{
+      width:100%;height:6px;
+      background:var(--surface2);border-radius:4px;overflow:hidden;
+    }
+    .prog-fill{
+      height:100%;width:100%;
+      background:var(--accent-g);
+      border-radius:4px;transform-origin:left;transform:scaleX(0);
+    }
+
+    /* timer */
+    .timer-area{display:flex;flex-direction:column;align-items:center;gap:10px;}
+    #wait-lbl{
+      font-size:.68rem;font-weight:700;letter-spacing:2.5px;
+      color:var(--muted);text-transform:uppercase;
+    }
+    #tc{position:relative;width:120px;height:120px;}
+    #tc svg{width:120px;height:120px;}
+    .cbg{fill:none;stroke:var(--surface2);stroke-width:7;}
+    .cfg{
+      fill:none;stroke:url(#tg);stroke-width:7;
+      stroke-linecap:round;
+      stroke-dasharray:301.59;stroke-dashoffset:0;
+      transform-origin:center;transform:rotate(-90deg);
+      transition:stroke-dashoffset .95s linear;
+    }
+    #tnum{
+      position:absolute;inset:0;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      font-family:'Syne',sans-serif;
+      font-size:2.6rem;font-weight:800;
+      background:var(--accent-g);
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text;
+      line-height:1;
+    }
+    #tnum small{
+      font-size:.42rem;font-weight:700;color:var(--muted);
+      letter-spacing:1.5px;text-transform:uppercase;
+      margin-top:3px;
+      -webkit-text-fill-color:var(--muted);
+    }
+    .paused-pill{
+      display:none;
+      font-size:.68rem;font-weight:700;color:var(--yellow);
+      background:rgba(245,158,11,.12);
+      border:1px solid rgba(245,158,11,.3);
+      border-radius:20px;padding:3px 12px;
+      letter-spacing:1px;text-transform:uppercase;
+    }
+
+    /* ── BUTTONS ── */
+    #wait-btn{
+      width:100%;padding:17px;
+      background:var(--surface2);color:#4a5068;
+      border:1.5px dashed var(--border);border-radius:12px;
+      font-family:'Syne',sans-serif;font-size:1rem;
+      font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+      cursor:not-allowed;
+      display:flex;align-items:center;justify-content:center;gap:10px;
+    }
+    .spin{
+      width:15px;height:15px;flex-shrink:0;
+      border:2.5px solid var(--border);border-top-color:var(--violet);
+      border-radius:50%;animation:spin .8s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    #btn-pair{display:none;width:100%;flex-direction:column;gap:10px;}
+
+    #btn-go{
+      width:100%;padding:18px;
+      background:var(--accent-g);color:#fff;
+      border:none;border-radius:12px;
+      font-family:'Syne',sans-serif;font-size:1.1rem;
+      font-weight:800;letter-spacing:.8px;text-transform:uppercase;
+      cursor:pointer;text-decoration:none;text-align:center;
+      box-shadow:0 6px 30px rgba(139,92,246,.4);
+      position:relative;overflow:hidden;
+      transition:transform .18s,box-shadow .18s;
+    }
+    #btn-go::after{
+      content:'';position:absolute;top:-50%;left:-70%;
+      width:40%;height:200%;background:rgba(255,255,255,.15);
+      transform:skewX(-20deg);animation:shine 2.8s 1s infinite;
+    }
+    @keyframes shine{0%{left:-70%}60%{left:140%}100%{left:140%}}
+    #btn-go:hover{transform:translateY(-2px);box-shadow:0 10px 40px rgba(139,92,246,.55);}
+
+    #btn-back{
+      width:100%;padding:14px;
+      background:transparent;color:#93c5fd;
+      border:1.5px solid rgba(59,130,246,.3);border-radius:12px;
+      font-family:'Syne',sans-serif;font-size:.9rem;
+      font-weight:700;letter-spacing:.8px;text-transform:uppercase;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;
+      transition:background .18s,border-color .18s;
+    }
+    #btn-back:hover{background:rgba(59,130,246,.08);border-color:rgba(59,130,246,.5);}
+
+    /* ── STEPS ── */
+    .steps{width:100%;display:flex;gap:10px;}
+    .step{
+      flex:1;background:var(--surface2);
+      border:1px solid var(--border);border-radius:12px;
+      padding:14px 8px;display:flex;flex-direction:column;
+      align-items:center;gap:7px;
+      font-size:.71rem;color:var(--muted);font-weight:500;text-align:center;
+    }
+    .sn{
+      width:26px;height:26px;border-radius:50%;
+      background:var(--accent-g);color:#fff;
+      font-size:.68rem;font-weight:800;display:grid;place-items:center;
+      font-family:'Syne',sans-serif;
+    }
+    @media(max-width:360px){.steps{flex-direction:column;}}
+
+    /* ── AD BLOCKS ── */
+    .ad-wrap{
+      width:100%;
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+    }
+    .ad-wrap .al{
+      font-size:.52rem;color:#2e3352;letter-spacing:1px;text-transform:uppercase;font-weight:600;
+    }
+
+    /* ── DIVIDER ── */
+    .divider{
+      width:100%;display:flex;align-items:center;gap:10px;
+      font-size:.55rem;color:#2a2e45;letter-spacing:1px;text-transform:uppercase;font-weight:600;
+    }
+    .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+
+    /* ── TRUST ── */
+    .trust{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;}
+    .ti{display:flex;align-items:center;gap:5px;font-size:.68rem;color:#4a5068;font-weight:500;}
+    .ti svg{width:12px;height:12px;}
+
+    /* ── FOOTER ── */
+    footer{text-align:center;padding:10px;font-size:.63rem;color:#2e3352;}
+    footer a{color:#4a5068;text-decoration:none;}
+
+    /* ── STICKY BOTTOM AD ── */
+    .sticky-ad{
+      position:fixed;bottom:0;left:0;right:0;z-index:300;
+      background:rgba(22,25,40,.96);
+      backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+      border-top:1px solid var(--border);
+      display:flex;justify-content:center;align-items:center;
+      padding:6px 40px 6px 10px;
+      min-height:66px;
+    }
+    .sticky-close{
+      position:absolute;right:8px;top:50%;transform:translateY(-50%);
+      background:var(--surface2);border:1px solid var(--border);
+      border-radius:50%;width:26px;height:26px;
+      cursor:pointer;color:var(--muted);
+      font-size:.75rem;display:grid;place-items:center;
+      font-weight:700;line-height:1;
+      transition:background .15s;
+    }
+    .sticky-close:hover{background:#2a2e45;}
+  </style>
+</head>
+<body>
+
+<!-- TAB WARNING -->
+<div id="tab-warn">⏸ Timer paused — come back to this tab to earn your reward</div>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-icon">
+      <svg viewBox="0 0 20 20"><path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8Zm1 11H9V9h2v4Zm0-6H9V5h2v2Z"/></svg>
+    </div>
+    GameReward Hub
+  </div>
+  <div class="nav-right">
+    <svg viewBox="0 0 16 16"><path d="M8 1L2 3v4c0 3.31 2.55 6.41 6 7 3.45-.59 6-3.69 6-7V3L8 1Z"/></svg>
+    Secure
+  </div>
+</nav>
+
+<!-- AD 1 — TOP BANNER: clean static iframe, labelled clearly -->
+<div class="top-ad">
+  <div class="ad-label">Advertisement</div>
+  <div class="d-only">
+    <!-- Desktop 728×90 -->
+    <script>atOptions={'key':'e13f95cf5439d959754853e4e7f23e7e','format':'iframe','height':90,'width':728,'params':{}};</script>
+    <script src="//www.highperformanceformat.com/e13f95cf5439d959754853e4e7f23e7e/invoke.js"></script>
+  </div>
+  <div class="m-only">
+    <!-- Mobile 320×50 -->
+    <script>atOptions={'key':'3171c38c566adb392f0884ca3604429d','format':'iframe','height':50,'width':320,'params':{}};</script>
+    <script src="//www.highperformanceformat.com/3171c38c566adb392f0884ca3604429d/invoke.js"></script>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- REWARD SUCCESS (shown after timer completes) -->
+  <div id="reward-status">
+    <div class="rs-icon">🎉</div>
+    <h2>Reward Unlocked!</h2>
+    <p id="rs-msg">You completed the full ad. Your reward is being sent back to the app.</p>
+    <div class="token-box" id="tok-display"></div>
+  </div>
+
+  <!-- MAIN CARD -->
+  <div class="card">
+
+    <div class="chip"><span class="chip-dot"></span> Watch &amp; Earn</div>
+
+    <h1>Watch Ads to <em>Unlock</em><br>Your In-App Reward</h1>
+    <p class="sub" id="main-sub">Stay on this page while the timer counts down. Your reward unlocks automatically when done.</p>
+
+    <!-- Reward info (set by the app via URL params) -->
+    <div id="rinfo">
+      <div class="ri">🎁</div>
+      <div>
+        <strong id="rname">Your Reward</strong>
+        <span id="rdesc">Complete timer to claim</span>
+      </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
+
+    <!-- Timer ring -->
+    <div class="timer-area">
+      <div id="wait-lbl">Please Wait…</div>
+      <div class="paused-pill" id="paused-pill">⏸ Paused — Come Back!</div>
+      <div id="tc">
+        <svg viewBox="0 0 108 108">
+          <defs>
+            <linearGradient id="tg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6"/>
+              <stop offset="100%" stop-color="#8b5cf6"/>
+            </linearGradient>
+          </defs>
+          <circle class="cbg" cx="54" cy="54" r="48"/>
+          <circle class="cfg" id="cfg" cx="54" cy="54" r="48"/>
+        </svg>
+        <div id="tnum"><span id="cd">25</span><small>seconds</small></div>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+    <div style="width:100%">
+      <div id="wait-btn"><div class="spin"></div> Timer Running… Please Wait</div>
+      <div id="btn-pair">
+        <a id="btn-go" href="#" rel="noopener">✅ Claim Reward &amp; Return to App →</a>
+        <button id="btn-back" onclick="goBack()">← Go Back to App</button>
+      </div>
+    </div>
+
+    <!-- Steps -->
+    <div class="steps">
+      <div class="step"><div class="sn">1</div>Stay on this page</div>
+      <div class="step"><div class="sn">2</div>Timer counts down</div>
+      <div class="step"><div class="sn">3</div>Reward sent to app</div>
+    </div>
+
+  </div><!-- /card -->
+
+  <!-- DIVIDER -->
+  <div class="divider">Sponsored</div>
+
+  <!-- AD 2 — MID-PAGE BOX: clean labelled zone, doesn't overlap -->
+  <div class="ad-wrap">
+    <div class="al">Advertisement</div>
+    <script>atOptions={'key':'9efa266e9255e3d47a288a594f309d40','format':'iframe','height':250,'width':300,'params':{}};</script>
+    <script src="//www.highperformanceformat.com/9efa266e9255e3d47a288a594f309d40/invoke.js"></script>
+  </div>
+
+  <!-- TRUST BADGES -->
+  <div class="trust">
+    <div class="ti">
+      <svg viewBox="0 0 16 16" fill="#22c55e"><path d="M8 1L2 3v4c0 3.31 2.55 6.41 6 7 3.45-.59 6-3.69 6-7V3L8 1Z"/></svg>
+      Secure Redirect
+    </div>
+    <div class="ti">
+      <svg viewBox="0 0 16 16" fill="#3b82f6"><circle cx="8" cy="8" r="7"/><path d="M5 8l2 2 4-4" stroke="#fff" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      Verified Safe
+    </div>
+    <div class="ti">
+      <svg viewBox="0 0 16 16" fill="#8b5cf6"><rect x="2" y="6" width="12" height="9" rx="1.5"/><path d="M5 6V4a3 3 0 0 1 6 0v2" stroke="#8b5cf6" stroke-width="1.5" fill="none"/></svg>
+      Encrypted
+    </div>
+  </div>
+
+  <footer>
+    © 2025 GameReward Hub &nbsp;·&nbsp;
+    <a href="#">Terms</a> &nbsp;·&nbsp; <a href="#">Privacy</a>
+  </footer>
+
+</div><!-- /wrap -->
+
+<!-- AD 3 — STICKY FOOTER: closeable, never blocks the claim button -->
+<div class="sticky-ad" id="sticky-ad">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:2px">
+    <span class="ad-label" style="color:#2e3352">Advertisement</span>
+    <script>atOptions={'key':'3171c38c566adb392f0884ca3604429d','format':'iframe','height':50,'width':320,'params':{}};</script>
+    <script src="//www.highperformanceformat.com/3171c38c566adb392f0884ca3604429d/invoke.js"></script>
+  </div>
+  <button class="sticky-close" onclick="document.getElementById('sticky-ad').style.display='none'" title="Close ad">✕</button>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ── READ URL PARAMS (set by the app) ── */
+  var p        = new URLSearchParams(window.location.search);
+  var token    = (p.get('token')    || '').trim();
+  var reward   = (p.get('reward')   || '').trim();
+  var desc     = (p.get('desc')     || '').trim();
+  var callback = (p.get('callback') || '').trim();
+  var postback = (p.get('postback') || '').trim();
+  var dur      = parseInt(p.get('duration') || '25', 10);
+  if(isNaN(dur)||dur<5||dur>120) dur=25;
+
+  /* ── STATE ── */
+  var remaining = dur;
+  var paused    = false;
+  var done      = false;
+  var timerRef  = null;
+  var CIRC      = 2 * Math.PI * 48; // r=48 → ~301.59
+
+  /* ── ELEMENT REFS ── */
+  var cdEl    = document.getElementById('cd');
+  var cfgEl   = document.getElementById('cfg');
+  var progEl  = document.getElementById('prog');
+  var waitBtn = document.getElementById('wait-btn');
+  var btnPair = document.getElementById('btn-pair');
+  var lblEl   = document.getElementById('wait-lbl');
+  var tcEl    = document.getElementById('tc');
+  var btnGo   = document.getElementById('btn-go');
+  var rStat   = document.getElementById('reward-status');
+  var tokEl   = document.getElementById('tok-display');
+  var tabWarn = document.getElementById('tab-warn');
+  var pauseP  = document.getElementById('paused-pill');
+  var rInfo   = document.getElementById('rinfo');
+
+  /* ── SHOW REWARD INFO FROM APP ── */
+  if(reward){
+    document.getElementById('rname').textContent = '🎁 ' + decodeURIComponent(reward);
+    document.getElementById('rdesc').textContent = desc
+      ? decodeURIComponent(desc)
+      : 'Complete the timer to claim';
+    rInfo.style.display = 'flex';
+  }
+
+  /* ── INIT RING ── */
+  cfgEl.style.strokeDasharray  = CIRC;
+  cfgEl.style.strokeDashoffset = 0;
+  cdEl.textContent = remaining;
+
+  /* ── START PROGRESS BAR ── */
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      progEl.style.transition = 'transform '+dur+'s linear';
+      progEl.style.transform  = 'scaleX(1)';
+    });
+  });
+
+  /* ── TICK ── */
+  function tick(){
+    if(paused||done) return;
+    remaining--;
+    cdEl.textContent = remaining > 0 ? remaining : 0;
+    cfgEl.style.strokeDashoffset = CIRC * (1 - remaining/dur);
+    if(remaining <= 0){ clearInterval(timerRef); onDone(); }
+  }
+  timerRef = setInterval(tick, 1000);
+
+  /* ── PAUSE / RESUME ── */
+  function pause(){
+    if(done) return;
+    paused = true;
+    pauseP.style.display  = 'block';
+    lblEl.style.display   = 'none';
+    tabWarn.style.display = 'block';
+    cfgEl.style.transition = 'none';
+  }
+  function resume(){
+    if(done) return;
+    paused = false;
+    pauseP.style.display  = 'none';
+    lblEl.style.display   = 'block';
+    tabWarn.style.display = 'none';
+    cfgEl.style.transition = 'stroke-dashoffset .95s linear';
+  }
+
+  /* ── PAUSE WHEN TAB HIDDEN ── */
+  document.addEventListener('visibilitychange', function(){
+    if(done) return;
+    document.hidden ? pause() : resume();
+  });
+
+  /* ── BLOCK ACCIDENTAL BACK ── */
+  history.pushState(null,'',location.href);
+  window.addEventListener('popstate', function(){
+    if(!done) history.pushState(null,'',location.href);
+  });
+
+  /* ── WARN ON CLOSE BEFORE DONE ── */
+  window.addEventListener('beforeunload', function(e){
+    if(!done){ e.returnValue='Leaving now will cancel your reward.'; return e.returnValue; }
+  });
+
+  /* ── COMPLETE ── */
+  function onDone(){
+    done = true;
+    window.onbeforeunload = null;
+
+    lblEl.style.display   = 'none';
+    tcEl.style.display    = 'none';
+    waitBtn.style.display = 'none';
+    pauseP.style.display  = 'none';
+    tabWarn.style.display = 'none';
+    rInfo.style.display   = 'none';
+
+    rStat.style.display   = 'block';
+    tokEl.textContent     = token ? 'Token: '+token+' ✅' : '✅ Reward Verified';
+    document.getElementById('rs-msg').textContent = reward
+      ? 'You earned '+decodeURIComponent(reward)+'! Returning to app…'
+      : 'You completed the full ad. Returning you to the app…';
+
+    var dl = deepLink('complete');
+    btnGo.href = dl || '#';
+    btnPair.style.display = 'flex';
+
+    rStat.scrollIntoView({behavior:'smooth',block:'center'});
+
+    fire(postback, 'complete');
+
+    if(callback){
+      setTimeout(function(){
+        try{ window.location.href = dl; }catch(e){}
+      }, 2000);
+    }
+  }
+
+  /* ── HELPERS ── */
+  function deepLink(st){
+    if(!callback) return '';
+    try{
+      var b = decodeURIComponent(callback);
+      return b+(b.indexOf('?')>-1?'&':'?')+'status='+st+'&token='+encodeURIComponent(token);
+    }catch(e){ return ''; }
+  }
+
+  function fire(pb, st){
+    if(!pb) return;
+    try{
+      var u = decodeURIComponent(pb);
+      u += (u.indexOf('?')>-1?'&':'?')+'status='+st+'&token='+encodeURIComponent(token);
+      new Image().src = u;
+      fetch(u,{mode:'no-cors',cache:'no-store'}).catch(function(){});
+    }catch(e){}
+  }
+
+  window.goBack = function(){
+    var dl = deepLink(done?'complete':'cancelled');
+    if(dl) window.location.href = dl;
+    else history.back();
+  };
+
+})();
+</script>
+</body>
+</html>
